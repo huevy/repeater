@@ -16,6 +16,7 @@ module.exports = function(io) {
 };
 
 function TwitDto(event) {
+	this.id = event.id_str;
 	this.text = event.text;
 	this.createdAt = new Date(event.created_at);
 	this.name = event.user.name;
