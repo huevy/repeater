@@ -8,6 +8,10 @@ module.exports = function(io) {
 	var stream = new Stream(conf.twitter);
 	stream.stream();
 
+	stream.on('error', function(err) {
+		console.error(err);
+		process.exit(1);
+	});
 	//listen stream data
 	stream.on('data', function(json) {
 		if (json.text) {

@@ -7,6 +7,12 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
+app.get('/api/*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
