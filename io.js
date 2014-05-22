@@ -1,3 +1,6 @@
+var TwitDto = require('./lib/TwitDto');
+var store = require('./store');
+
 module.exports = function(io) {
 	var Stream = require('user-stream');
 
@@ -9,16 +12,8 @@ module.exports = function(io) {
 	stream.on('data', function(json) {
 		if (json.text) {
 			var twit = new TwitDto(json);
+			store.lastTwits.push(twit);
 			io.sockets.emit('twit', twit);
 		}
 	});
-
 };
-
-function TwitDto(event) {
-	this.id = event.id_str;
-	this.text = event.text;
-	this.createdAt = new Date(event.created_at);
-	this.name = event.user.name;
-	this.screenName = event.user.screen_name;
-}
