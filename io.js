@@ -16,8 +16,9 @@ module.exports = function(io) {
 	stream.on('data', function(json) {
 		if (json.text) {
 			var twit = new TwitDto(json);
-			store.lastTwits.push(twit);
 			io.sockets.emit('twit', twit);
+			store.lastTwits.push(twit);
+			store.topUsers.set(twit.screenName);
 		}
 	});
 };
