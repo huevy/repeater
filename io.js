@@ -39,7 +39,21 @@ module.exports = function(io) {
 				media: media,
 				twit: twit
 			});
+			process.nextTick(function() {
+				storeMedia(media, twit);
+			});
 		}
+	}
+
+	function storeMedia(media, twit) {
+		for (var i = 0; i < media.length; i++) {
+			var item = {
+				photo: media[i],
+				twit: twit
+			};
+			store.lastPhotos.push(item);
+		}
+		console.log(store.lastPhotos.items.length);
 	}
 
 
