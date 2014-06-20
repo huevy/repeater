@@ -2,7 +2,6 @@ var TwitDto = require('./lib/TwitDto');
 var extractMedia = require('./lib/extractMedia');
 var store = require('./store');
 var promote = require('./promote');
-var _ = require('lodash');
 
 module.exports = function(io) {
 	var Stream = require('user-stream');
@@ -30,8 +29,13 @@ module.exports = function(io) {
 			var twit = new TwitDto(json);
 			io.sockets.emit('twit', twit);
 			store.lastTwits.push(twit);
-			store.promotionCandidates.push(twit);
 			store.topUsers.set(twit.screenName);
+
+			if (promote.isCharity(twit)) {
+				console.log('CHARITY:', twit.screenName, twit.text);
+				promote.retweet(twit);
+			}
+			store.promotionCandidates.push(twit);
 			return twit;
 		}
 		return null;
@@ -65,9 +69,7 @@ module.exports = function(io) {
 	function onPromotionCandidatesFull(candidatesTail) {
 		var candidates = candidatesTail.items;
 		candidatesTail.clear();
-		console.log('--------TO PROMOTE-----------');
-		console.log(candidates);
-		promote(candidates);
+		promote.promoteNewcomer(candidates);
 	}
 
 };
