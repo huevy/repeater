@@ -1,6 +1,8 @@
 var TwitDto = require('./lib/TwitDto');
 var extractMedia = require('./lib/extractMedia');
 var store = require('./store');
+var promote = require('./promote');
+var _ = require('lodash');
 
 module.exports = function(io) {
 	var Stream = require('user-stream');
@@ -21,11 +23,14 @@ module.exports = function(io) {
 		}
 	});
 
+	store.promotionCandidates.on('full', onPromotionCandidatesFull);
+
 	function processTwit(json) {
 		if (json.text) {
 			var twit = new TwitDto(json);
 			io.sockets.emit('twit', twit);
 			store.lastTwits.push(twit);
+			store.promotionCandidates.push(twit);
 			store.topUsers.set(twit.screenName);
 			return twit;
 		}
@@ -56,5 +61,13 @@ module.exports = function(io) {
 		console.log(store.lastPhotos.items.length);
 	}
 
+
+	function onPromotionCandidatesFull(candidatesTail) {
+		var candidates = candidatesTail.items;
+		candidatesTail.clear();
+		console.log('--------TO PROMOTE-----------');
+		console.log(candidates);
+		promote(candidates);
+	}
 
 };
