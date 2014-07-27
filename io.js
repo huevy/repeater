@@ -3,6 +3,7 @@ var extractMedia = require('./lib/extractMedia');
 var store = require('./store');
 var promote = require('./promote');
 
+
 module.exports = function(io) {
 	var Stream = require('user-stream');
 
@@ -25,6 +26,22 @@ module.exports = function(io) {
 	store.promotionCandidates.on('full', onPromotionCandidatesFull);
 
 	function processTwit(json) {
+		// if (json.retweeted_status) {
+		// 	console.log('SKIP: retweet');
+		// 	return;
+		// }
+		// if (json.entities && json.entities.user_mentions && json.entities.user_mentions.length) {
+		// 	console.log('SKIP: mention');
+		// 	return;
+		// }
+		if (json.in_reply_to_status_id) {
+			console.log('SKIP: in_reply_to_status_id');
+			return;
+		}
+		if (json.in_reply_to_user_id) {
+			console.log('SKIP: in_reply_to_user_id');
+			return;
+		}
 		if (json.text) {
 			var twit = new TwitDto(json);
 			io.sockets.emit('twit', twit);
@@ -40,6 +57,7 @@ module.exports = function(io) {
 		}
 		return null;
 	}
+
 
 	function processMedia(json, twit) {
 		var media = extractMedia(json);
